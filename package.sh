@@ -13,7 +13,7 @@ fi
 THIS_SCRIPT_PATH=`readlink -f $0`
 THIS_SCRIPT_DIR=`dirname ${THIS_SCRIPT_PATH}`
 
-PYINSTALLER_ZIP=${THIS_SCRIPT_DIR}/build_environment/installers/pyinstaller-2.0.zip
+PYINSTALLER_ZIP=${THIS_SCRIPT_DIR}/installers/PyInstaller-2.1.zip
 
 
 PYTHON_EXE_WIN="C:\\Python27\\python.exe"
@@ -48,7 +48,7 @@ mkdir -p ${BUILD_DIR_LINUX}
 
 # Unpack PyInstaller
 unzip ${PYINSTALLER_ZIP} -d ${BUILD_DIR_LINUX} > /dev/null
-PYINSTALLER_DIR_WIN=${BUILD_DIR_WIN}/pyinstaller-2.0
+PYINSTALLER_DIR_WIN=${BUILD_DIR_WIN}/pyinstaller-2.1
 
 # Create symbolic link to source directory so Windows can access it
 ln -s ${SOURCE_DIR_LINUX} ${BUILD_DIR_LINUX}/src_symlink
@@ -59,11 +59,9 @@ wine "${PYTHON_EXE_WIN}" "${PYINSTALLER_DIR_WIN}\\pyinstaller.py" \
     "--name=${PROJECT_NAME}" \
     --onefile \
     --noconsole \
-    "--out=${BUILD_DIR_WIN}\\compiled" \
     "${SOURCE_DIR_WIN}\\${MAIN_PY}"
 
-mv "${BUILD_DIR_LINUX}/compiled/dist/${PROJECT_NAME}.exe" /tmp
 rm -rf ${WINEPREFIX}
 
-echo "Executable available at /tmp/${PROJECT_NAME}.exe"
+echo "Executable available at dist/${PROJECT_NAME}.exe"
 
