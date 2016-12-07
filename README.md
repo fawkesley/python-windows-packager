@@ -12,8 +12,7 @@ To quickly build your Wine environment, then create a standalone EXE,
 run the following commands:
 
     $ wget "http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi" 
-    $ wget "http://downloads.sourceforge.net/project/pywin32/pywin32/Build%20218/pywin32-218.win32-py2.7.exe?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fpywin32%2Ffiles%2Fpywin32%2FBuild%2520218%2F&ts=1359740579&use_mirror=netcologne"
-
+    $ wget "http://nchc.dl.sourceforge.net/project/pywin32/pywin32/Build%20218/pywin32-218.win32-py2.7.exe"
     $ build_environment/create.sh
     $ export WINEPREFIX=/tmp/path-outputted-from-create
     $ wine start python-2.7.3.msi
