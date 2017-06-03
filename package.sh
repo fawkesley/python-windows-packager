@@ -13,7 +13,6 @@ fi
 THIS_SCRIPT_PATH=`readlink -f $0`
 THIS_SCRIPT_DIR=`dirname ${THIS_SCRIPT_PATH}`
 
-PYINSTALLER_ZIP=${THIS_SCRIPT_DIR}/installers/PyInstaller-2.1.zip
 
 
 PYTHON_EXE_WIN="C:\\Python27\\python.exe"
@@ -42,20 +41,42 @@ else
 fi
 
 BUILD_DIR_LINUX=${WINEPREFIX}/drive_c/build
+PY_DIR_WIN="C:\\Python27"
 BUILD_DIR_WIN="C:\\build"
 mkdir -p ${BUILD_DIR_LINUX}
-
-
-# Unpack PyInstaller
-unzip ${PYINSTALLER_ZIP} -d ${BUILD_DIR_LINUX} > /dev/null
-PYINSTALLER_DIR_WIN=${BUILD_DIR_WIN}/pyinstaller-2.1
 
 # Create symbolic link to source directory so Windows can access it
 ln -s ${SOURCE_DIR_LINUX} ${BUILD_DIR_LINUX}/src_symlink
 SOURCE_DIR_WIN=${BUILD_DIR_WIN}\\src_symlink
 
+set -x
 
-wine "${PYTHON_EXE_WIN}" "${PYINSTALLER_DIR_WIN}\\pyinstaller.py" \
+# PIP FETCH
+echo builddir is ${BUILD_DIR_LINUX}
+if [ -x "$(command -v wget)" ]; then
+  wget https://bootstrap.pypa.io/get-pip.py -O ${BUILD_DIR_LINUX}/get-pip.py
+elif [ -x "$(command -v curl)" ]; then
+  curl https://bootstrap.pypa.io/get-pip.py >${BUILD_DIR_LINUX}/get-pip.py
+else
+  echo "couldn't find a way to retrieve get-pip.py from the web"
+  exit 1
+fi # PIP FETCH
+
+wine "${PYTHON_EXE_WIN}" "${BUILD_DIR_WIN}\\get-pip.py"
+
+wine "${PYTHON_EXE_WIN}" "-m" "pip" "install" "pyinstaller"
+
+if [ -f ${SOURCE_DIR_LINUX}/requirements.txt ]; then
+    wine "${PYTHON_EXE_WIN}" "-m" "pip" "install" "-r" \
+        "${SOURCE_DIR_WIN}\\requirements.txt"
+fi # [ -f requirements.txt ]
+
+# NOTE - if using hooks, your spec'file should have a line like:
+# hookspath=["C:\\build\\src_symlink\\hooks\\"],
+
+echo -e -n "#\n# RUNNING PYINSTALLER\n#\n"
+
+wine "${PYTHON_EXE_WIN}" "-m" "PyInstaller" \
     "--name=${PROJECT_NAME}" \
     --onefile \
     --noconsole \
